@@ -1,0 +1,19 @@
+# Scenario: removing the /api/v2 specific route, collapsing to default only.
+# If this is applied against an existing VirtualService that had a /api/v2
+# match, the analyzer will flag the removed route as AT_RISK — callers using
+# /api/v2 will now fall through to whatever catches them next.
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: checkout-routes
+  namespace: payments
+spec:
+  hosts:
+    - checkout
+  http:
+    - name: default
+      route:
+        - destination:
+            host: checkout
+            subset: v1
+          weight: 100

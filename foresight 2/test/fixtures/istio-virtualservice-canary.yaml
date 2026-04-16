@@ -1,0 +1,24 @@
+# Scenario: promoting v2 from 10% canary to 100%.
+# If this is applied against an existing VirtualService with 90/10 weights,
+# the analyzer will detect a weight shift and (if Prometheus is available)
+# check v2's observed error rate to decide between REROUTED and DEGRADED.
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: checkout
+  namespace: payments
+spec:
+  hosts:
+    - checkout
+  http:
+    - name: primary
+      route:
+        - destination:
+            host: checkout
+            subset: v1
+          weight: 0
+        - destination:
+            host: checkout
+            subset: v2
+          weight: 100
+      timeout: 5s
